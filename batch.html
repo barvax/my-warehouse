@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Batch Information</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1 id="chemicalName" class="mt-5"></h1>
+    <h2>Batches</h2>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#batchModal">Add New Batch</button>
+
+    <table class="table table-striped mt-3" id="batchesTable">
+      <thead>
+        <tr>
+          <th>Batch Number</th>
+          <th>Package Amount</th>
+          <th>Package Size</th>
+          <th>Description</th>
+          <th>Comments</th>
+          <th>Document</th>
+          <th>QR Code</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Batch data will be inserted here by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal for adding a new batch -->
+  <div class="modal fade" id="batchModal" tabindex="-1" aria-labelledby="batchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="batchModalLabel">Add New Batch</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="batchForm">
+            <div class="form-group">
+              <label for="batchNumber">Batch Number</label>
+              <input type="text" id="batchNumber" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="packageAmount">Package Amount</label>
+              <input type="number" id="packageAmount" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="packageSize">Package Size</label>
+              <input type="text" id="packageSize" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea id="description" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="comments">Comments</label>
+              <textarea id="comments" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="documentUpload">Upload Document</label>
+              <input type="file" id="documentUpload" class="form-control-file">
+            </div>
+            <button type="submit" class="btn btn-primary">Add Batch</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+  <script src="batch-script.js"></script>
+</body>
+</html>

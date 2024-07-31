@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemicals Information</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1 class="mt-5">Common Chemicals</h1>
+    <div class="form-group mt-3">
+      <label for="searchInput">Search:</label>
+      <input type="text" id="searchInput" class="form-control" placeholder="Enter chemical name or CAS number">
+    </div>
+    <table class="table table-striped mt-3" id="chemicalsTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>IUPAC Name</th>
+          <th>CAS Number</th>
+          <th>Melting Point (°C)</th>
+          <th>Boiling Point (°C)</th>
+          <th>Molecular Weight (g/mol)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data will be inserted here by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const chemicals = [
+      { name: "Water", iupacName: "Oxidane", casNumber: "7732-18-5", meltingPoint: 0, boilingPoint: 100, molecularWeight: 18.01528 },
+      { name: "Ethanol", iupacName: "Ethanol", casNumber: "64-17-5", meltingPoint: -114.1, boilingPoint: 78.37, molecularWeight: 46.06844 },
+      { name: "Sodium chloride", iupacName: "Sodium chloride", casNumber: "7647-14-5", meltingPoint: 801, boilingPoint: 1413, molecularWeight: 58.44 },
+      { name: "Acetic acid", iupacName: "Ethanoic acid", casNumber: "64-19-7", meltingPoint: 16.6, boilingPoint: 118.1, molecularWeight: 60.052 },
+      { name: "Hydrogen peroxide", iupacName: "Hydrogen peroxide", casNumber: "7722-84-1", meltingPoint: -0.43, boilingPoint: 150.2, molecularWeight: 34.0147 },
+      { name: "Methane", iupacName: "Methane", casNumber: "74-82-8", meltingPoint: -182.5, boilingPoint: -161.5, molecularWeight: 16.04 },
+      { name: "Carbon dioxide", iupacName: "Carbon dioxide", casNumber: "124-38-9", meltingPoint: -78.5, boilingPoint: -78.5, molecularWeight: 44.01 }
+    ];
+
+    const tableBody = document.querySelector('#chemicalsTable tbody');
+    const searchInput = document.getElementById('searchInput');
+
+    function populateTable(filteredChemicals) {
+      tableBody.innerHTML = '';
+      filteredChemicals.forEach(chemical => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><a href="batch.html?chemical=${encodeURIComponent(chemical.name)}" target="_blank">${chemical.name}</a></td>
+          <td>${chemical.iupacName}</td>
+          <td>${chemical.casNumber}</td>
+          <td>${chemical.meltingPoint}</td>
+          <td>${chemical.boilingPoint}</td>
+          <td>${chemical.molecularWeight}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function filterChemicals() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const filteredChemicals = chemicals.filter(chemical =>
+        chemical.name.toLowerCase().includes(searchTerm) ||
+        chemical.casNumber.includes(searchTerm)
+      );
+      populateTable(filteredChemicals);
+    }
+
+    searchInput.addEventListener('input', filterChemicals);
+
+    // Initial population of the table
+    populateTable(chemicals);
+  </script>
+</body>
+</html>

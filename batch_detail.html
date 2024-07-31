@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Batch Detail</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1 id="batchDetailTitle" class="mt-5"></h1>
+    <div id="batchDetails"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const chemicalName = urlParams.get('chemical');
+      const batchNumber = urlParams.get('batch');
+      const batchesKey = `batches_${chemicalName}`;
+      const batches = JSON.parse(localStorage.getItem(batchesKey)) || [];
+
+      const batch = batches.find(b => b.batchNumber === batchNumber);
+      if (batch) {
+        document.getElementById('batchDetailTitle').textContent = `Batch Details for ${chemicalName} - Batch ${batchNumber}`;
+        const batchDetailsDiv = document.getElementById('batchDetails');
+        batchDetailsDiv.innerHTML = `
+          <p><strong>Batch Number:</strong> ${batch.batchNumber}</p>
+          <p><strong>Package Amount:</strong> ${batch.packageAmount}</p>
+          <p><strong>Package Size:</strong> ${batch.packageSize}</p>
+          <p><strong>Description:</strong> ${batch.description}</p>
+          <p><strong>Comments:</strong> ${batch.comments}</p>
+          <p><strong>Document:</strong> ${batch.documentUpload}</p>
+        `;
+      } else {
+        document.getElementById('batchDetailTitle').textContent = 'Batch not found';
+      }
+    });
+  </script>
+</body>
+</html>
