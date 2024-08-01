@@ -3,13 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Batch Detail</title>
+  <title>Single Batch Detail</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
   <div class="container">
     <h1 id="batchDetailTitle" class="mt-5"></h1>
     <div id="batchDetails"></div>
+    <h3>Update Package Amount</h3>
+    <form id="updateForm">
+      <div class="form-group">
+        <label for="updatePackageAmount">Package Amount</label>
+        <input type="number" id="updatePackageAmount" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Update</button>
+      <button class="btn btn-primary">
+        <a href="index.html" style="color: white; text-decoration: none;">Home</a>
+      </button>
+    </form>
   </div>
 
   <script>
@@ -19,8 +30,8 @@
       const batchNumber = urlParams.get('batch');
       const batchesKey = `batches_${chemicalName}`;
       const batches = JSON.parse(localStorage.getItem(batchesKey)) || [];
-
       const batch = batches.find(b => b.batchNumber === batchNumber);
+
       if (batch) {
         document.getElementById('batchDetailTitle').textContent = `Batch Details for ${chemicalName} - Batch ${batchNumber}`;
         const batchDetailsDiv = document.getElementById('batchDetails');
@@ -32,6 +43,29 @@
           <p><strong>Comments:</strong> ${batch.comments}</p>
           <p><strong>Document:</strong> ${batch.documentUpload}</p>
         `;
+
+        const updateForm = document.getElementById('updateForm');
+        const updatePackageAmount = document.getElementById('updatePackageAmount');
+
+        // Pre-fill the input with the current package amount
+        updatePackageAmount.value = batch.packageAmount;
+
+        updateForm.addEventListener('submit', function(event) {
+          event.preventDefault();
+
+          const newAmount = updatePackageAmount.value;
+
+          // Update the package amount in the batch object
+          batch.packageAmount = newAmount;
+
+          // Save the updated batches array back to localStorage
+          localStorage.setItem(batchesKey, JSON.stringify(batches));
+
+          alert('Package amount updated successfully');
+
+          // Reload the page to reflect the updated data
+          window.location.reload();
+        });
       } else {
         document.getElementById('batchDetailTitle').textContent = 'Batch not found';
       }

@@ -5,30 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Batch Information</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+    .sidebar {
+      width: 100%;
+      max-width: 15%;
+      background-color: #343a40; /* Change to your desired color */
+      color: white;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: relative;
+        height: auto;
+        max-width: 100%;
+      }
+
+      .content {
+        margin-left: 0;
+        width: 100%;
+      }
+    }
+    
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
+    
+    .sidebar a:hover {
+      background-color: #495057;
+    }
+    
+    .content {
+      margin-left: 15%;
+      padding: 1rem;
+      width: 85%;
+    }
+
+    .pictograms {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pictograms img {
+      width: 32px;
+      height: 32px;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1 id="chemicalName" class="mt-5"></h1>
-    <h2>Batches</h2>
-    <button class="btn btn-primary" data-toggle="modal" data-target="#batchModal">Add New Batch</button>
+  <div class="sidebar">
+    <h3>Menu</h3>
+    <a href="index.html">Home</a>
+    <a href="summary.html">Summary</a>
+  </div>
+  
+  <div class="content">
+    <div class="container">
+      <div class="d-flex align-items-center mt-5 flex-wrap">
+        <h1 id="chemicalName" class="mr-3"></h1>
+        <div id="hazardPictograms" class="pictograms"></div>
+      </div>
+      <h2>Batches</h2>
+      <button class="btn btn-primary" data-toggle="modal" data-target="#batchModal">Add New Batch</button>
 
-    <table class="table table-striped mt-3" id="batchesTable">
-      <thead>
-        <tr>
-          <th>Batch Number</th>
-          <th>Package Amount</th>
-          <th>Package Size</th>
-          <th>Description</th>
-          <th>Comments</th>
-          <th>Document</th>
-          <th>QR Code</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Batch data will be inserted here by JavaScript -->
-      </tbody>
-    </table>
+      <table class="table table-striped mt-3" id="batchesTable">
+        <thead>
+          <tr>
+            <th>Batch Number</th>
+            <th>Package Amount</th>
+            <th>Package Size</th>
+            <th>Description</th>
+            <th>Comments</th>
+            <th>Document</th>
+            <th>QR Code</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Batch data will be inserted here by JavaScript -->
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- Modal for adding a new batch -->
@@ -78,6 +153,103 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-  <script src="batch-script.js"></script>
+  <script>
+    const chemicals = {
+      "Water": { pictograms: [] },
+      "Ethanol": { pictograms: ["GHS02", "GHS07"] },
+      "Sodium chloride": { pictograms: [] },
+      "Acetic acid": { pictograms: ["GHS02", "GHS05"] },
+      "Hydrogen peroxide": { pictograms: ["GHS03", "GHS05", "GHS07"] },
+      "Methane": { pictograms: ["GHS02", "GHS04"] },
+      "Carbon dioxide": { pictograms: ["GHS04"] }
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const chemicalName = urlParams.get('chemical');
+      document.getElementById('chemicalName').textContent = chemicalName;
+
+      const pictogramsContainer = document.getElementById('hazardPictograms');
+      const pictograms = chemicals[chemicalName]?.pictograms || [];
+      const pictogramsHTML = pictograms.map(pic => `<img src="images/${pic}.png" alt="${pic}">`).join(' ');
+      pictogramsContainer.innerHTML = pictogramsHTML;
+
+      const batchesKey = `batches_${chemicalName}`;
+      let batches = JSON.parse(localStorage.getItem(batchesKey)) || [];
+
+      const tableBody = document.querySelector('#batchesTable tbody');
+      const batchForm = document.getElementById('batchForm');
+
+      batchForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const batchNumber = document.getElementById('batchNumber').value;
+        const packageAmount = document.getElementById('packageAmount').value;
+        const packageSize = document.getElementById('packageSize').value;
+        const description = document.getElementById('description').value;
+        const comments = document.getElementById('comments').value;
+        const documentUpload = document.getElementById('documentUpload').files[0];
+        
+        let documentName = '';
+        if (documentUpload) {
+          documentName = documentUpload.name;
+        }
+
+        const batch = {
+          batchNumber,
+          packageAmount,
+          packageSize,
+          description,
+          comments,
+          documentUpload: documentName
+        };
+
+        batches.push(batch);
+        localStorage.setItem(batchesKey, JSON.stringify(batches));
+        populateTable();
+        batchForm.reset();
+        $('#batchModal').modal('hide');
+      });
+
+      function populateTable() {
+        tableBody.innerHTML = '';
+        batches.forEach((batch, index) => {
+          const row = document.createElement('tr');
+
+          const qrCodeUrl = `single_batch.html?chemical=${encodeURIComponent(chemicalName)}&batch=${encodeURIComponent(batch.batchNumber)}`;
+          
+          row.innerHTML = `
+            <td>${batch.batchNumber}</td>
+            <td>${batch.packageAmount}</td>
+            <td>${batch.packageSize}</td>
+            <td>${batch.description}</td>
+            <td>${batch.comments}</td>
+            <td>${batch.documentUpload}</td>
+            <td id="qrcode-${index}"></td>
+            <td><button class="btn btn-danger btn-sm" onclick="deleteBatch(${index})">Delete</button></td>
+          `;
+          
+          tableBody.appendChild(row);
+
+          // Generate QR code
+          const qrCodeContainer = document.getElementById(`qrcode-${index}`);
+          new QRCode(qrCodeContainer, {
+            text: qrCodeUrl,
+            width: 64,
+            height: 64
+          });
+        });
+      }
+
+      window.deleteBatch = function(index) {
+        batches.splice(index, 1);
+        localStorage.setItem(batchesKey, JSON.stringify(batches));
+        populateTable();
+      };
+
+      // Initial population of the table
+      populateTable();
+    });
+  </script>
 </body>
 </html>
