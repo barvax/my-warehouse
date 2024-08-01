@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -7,86 +6,36 @@
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-    <div class="content">
-        <div class="sidebar">
-     
-            <a href="index.html">Home</a>
-          
-            <a href="summary.html">Summary</a>
-          </div>
-  <div class="container">
-    <h1 class="mt-5">Summary of All Batches</h1>
-    <div class="form-group mt-3">
-      <label for="searchInput">Search:</label>
-      <input type="text" id="searchInput" class="form-control" placeholder="Enter chemical name or batch number">
+  <div class="content">
+    <div class="sidebar">
+      <a href="index.html">Home</a>
+      <a href="summary.html">Summary</a>
     </div>
-    <table class="table table-striped mt-3" id="summaryTable">
-      <thead>
-        <tr>
-          <th>Chemical Name</th>
-          <th>Batch Number</th>
-          <th>Package Amount</th>
-          <th>Package Size</th>
-          <th>Description</th>
-          <th>Comments</th>
-          <th>Document</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Batch summary data will be inserted here by JavaScript -->
-      </tbody>
-    </table>
- 
+    <div class="container">
+      <h1 class="mt-5">Summary of All Batches</h1>
+      <div class="form-group mt-3">
+        <label for="searchInput">Search:</label>
+        <input type="text" id="searchInput" class="form-control" placeholder="Enter chemical name or batch number">
+      </div>
+      <table class="table table-striped mt-3" id="summaryTable">
+        <thead>
+          <tr>
+            <th>Chemical Name</th>
+            <th>Batch Number</th>
+            <th>Package Amount</th>
+            <th>Package Size</th>
+            <th>Description</th>
+            <th>Comments</th>
+            <th>Document</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Batch summary data will be inserted here by JavaScript -->
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const chemicals = ["Water", "Ethanol", "Sodium chloride", "Acetic acid", "Hydrogen peroxide", "Methane", "Carbon dioxide"];
-      const tableBody = document.querySelector('#summaryTable tbody');
-      const searchInput = document.getElementById('searchInput');
-
-      function populateSummaryTable(filteredChemicals = null) {
-        tableBody.innerHTML = '';
-        (filteredChemicals || chemicals).forEach(chemical => {
-          const batchesKey = `batches_${chemical}`;
-          const batches = JSON.parse(localStorage.getItem(batchesKey)) || [];
-          batches.forEach(batch => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${chemical}</td>
-              <td>${batch.batchNumber}</td>
-              <td>${batch.packageAmount}</td>
-              <td>${batch.packageSize}</td>
-              <td>${batch.description}</td>
-              <td>${batch.comments}</td>
-              <td>${batch.documentUpload}</td>
-            `;
-            tableBody.appendChild(row);
-          });
-        });
-      }
-
-      function filterSummary() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const filteredChemicals = chemicals.filter(chemical => {
-          const batchesKey = `batches_${chemical}`;
-          const batches = JSON.parse(localStorage.getItem(batchesKey)) || [];
-          return batches.some(batch =>
-            chemical.toLowerCase().includes(searchTerm) ||
-            batch.batchNumber.toLowerCase().includes(searchTerm)
-          );
-        });
-        populateSummaryTable(filteredChemicals);
-      }
-
-      searchInput.addEventListener('input', filterSummary);
-
-      // Initial population of the table
-      populateSummaryTable();
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
